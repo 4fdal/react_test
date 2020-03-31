@@ -1,0 +1,92 @@
+index.js
+const path = require('path');
+const bodyParser = require('body-parser');
+const express = require('express');
+
+app.use(bodyParser.json());
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './client/index.html'));
+});
+
+/client/index.html
+<html>
+  ...
+</html>
+
+
+---------------------------------------------
+index.js
+const path = require('path');
+const bodyParser = require('body-parser');
+const express = require('express');
+
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'client')))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/index.html'));
+});
+
+/client/index.html
+<html>
+  ...
+  <script src='index.js'>
+</html>
+
+/client/index.js
+console.log('test javascript')
+
+
+---------------------------------------
+parcel-bundler
+package.json
+"scripts": {
+  ...
+  "build-client" : "parcel build client/src/index.html --out-dir client/dist"
+},
+
+index.js
+const path = require('path');
+const bodyParser = require('body-parser');
+const express = require('express');
+
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, 'client/dist')))
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+});
+
+/client/index.html    - to ->  /client/src/index.html 
+<html>
+  <div id="root"></div>
+  <script src='index.js'>
+</html>
+
+/client/index.js      - to ->  /client/src/index.js 
+import React from 'react';
+import {render} from 'react-dom';
+
+render(
+    <div>My React</div>, 
+    document.getElementById('root')
+);
+
+--------------------------------------
+package.json
+"scripts": {
+  ...
+  "dev-client" : "parcel client/src/index.html --out-dir client/dist"
+},
+
+npm start dev-client
+npm start dev
+
+maka akan melakukan live update
+
+--------------------------------------
+"scripts": {
+  ...
+  "dev" : "npm run dev-client & nodemon index.js",
+  "build-client" : "npm run clean && parcel build client/src/index.html --out-dir client/dist",
+  "dev-client" : "npm run clean && parcel client/src/index.html --out-dir client/dist",
+  "clean" : "rm -rf .cache client/dist"
+},
